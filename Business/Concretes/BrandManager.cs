@@ -9,36 +9,51 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Business.Concretes
+namespace Business.Concretes;
+
+public class BrandManager : IBrandService
 {
-    public class BrandManager : IBrandService
+    private readonly IBrandDal _brandDal;
+
+    public BrandManager(IBrandDal brandDal)
     {
-        private readonly IBrandDal _brandDal;
+        _brandDal = brandDal;
+    }
 
-        public BrandManager(IBrandDal brandDal)
+    public CreatedBrandResponse Add(CreateBrandRequest createBrandRequest)
+    {
+        Brand brand = new();
+        brand.Name = createBrandRequest.Name;
+        brand.CreatedDate = DateTime.Now;
+
+        _brandDal.Add(brand);
+
+        CreatedBrandResponse createdBrandResponse = new CreatedBrandResponse();
+        createdBrandResponse.Name = brand.Name;
+        createdBrandResponse.Id = 4;
+        createdBrandResponse.CreatedDate = brand.CreatedDate;
+
+        return createdBrandResponse;
+    }
+
+    public List<GetAllBrandResponse> GetAll()
+    {
+        List<Brand> brands = _brandDal.GetAll();
+        List<GetAllBrandResponse> getAllBrandResponses = new List<GetAllBrandResponse>();
+
+        foreach (Brand brand in brands)
         {
-            _brandDal = brandDal;
-        }
+            GetAllBrandResponse getAllBrandResponse = new GetAllBrandResponse();
+            getAllBrandResponse.Name = brand.Name;
+            getAllBrandResponse.Id = brand.Id;
+            getAllBrandResponse.CreatedDate = brand.CreatedDate;
 
-        public CreatedBrandResponse Add(CreateBrandRequest createBrandRequest)
-        {
-            Brand brand = new();
-            brand.Name = createBrandRequest.Name;
-            brand.CreatedDate = DateTime.Now;
+            getAllBrandResponses.Add(getAllBrandResponse);
 
-            _brandDal.Add(brand);
+        } 
 
-            CreatedBrandResponse createdBrandResponse = new CreatedBrandResponse();
-            createdBrandResponse.Name = brand.Name;
-            createdBrandResponse.Id = 4;
-            createdBrandResponse.CreatedDate = brand.CreatedDate;
+        return getAllBrandResponses;
 
-            return createdBrandResponse;
-        }
 
-        public List<GetAllBrandResponse> GetAll()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
